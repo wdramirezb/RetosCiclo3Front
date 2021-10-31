@@ -200,6 +200,7 @@ function autoInicioDoctoresMensajes() {
             $.each(desplegableDoctores, function(id, name){
                 $select.append('<option value='+name.id+'>'+name.name+'</option>');
                 console.log("select "+name.id);
+                console.log(id, JSON.stringify(name));
             })
         }
     });
@@ -216,6 +217,25 @@ function autoInicioDoctoresReservas() {
             console.log(desplegableDoctores);
             let $select = $("#ReservaDoctor");
             $.each(desplegableDoctores, function(id, name){
+                $select.append('<option value='+name.id+'>'+name.name+'</option>');
+                console.log("select "+name.id);
+            })
+        }
+    });
+}
+
+
+//Extrae especialidades para desplegable al cargar página
+function autoInicioEspecialidades() {
+    console.log("cargando...")
+    $.ajax({
+        url: "http://129.151.122.81:8080/api/Specialty/all",
+        type: "GET",
+        datatype: "JSON",
+        success: function (desplegableEspecialidades) {
+            console.log(desplegableEspecialidades);
+            let $select = $("#DoctorSpecialty");
+            $.each(desplegableEspecialidades, function(id, name){
                 $select.append('<option value='+name.id+'>'+name.name+'</option>');
                 console.log("select "+name.id);
             })
@@ -281,10 +301,10 @@ $.ajax({
             $("#DoctorDepartment").val("");
             $("#DoctorYear").val("");
             $("#DoctorDescription").val("");
-            //$("#DoctorSpecialty").val("");
+            $("#DoctorSpecialty").val("");
             alert("New doctor added");
-            extraerInformacionDoctores();
-            window.location.reload();
+            //extraerInformacionDoctores();
+            //window.location.reload();
         },
 
         error: function (jqXHR, textStatus, errorThrown) {
@@ -324,6 +344,7 @@ function actualizarInformacionDoctor(idDoctor) {
         name: $("#DoctorName").val(),
         department: $("#DoctorDepartment").val(),
         year: $("#DoctorYear").val(),
+        specialty: {id:+$("#DoctorSpecialty").val()},
     };
     console.log(doctor);
     let dataToSend = JSON.stringify(doctor);
@@ -588,10 +609,10 @@ function pintarRespuestaMensajes(respuestaMensajes) {
 function guardarInformacionMensaje() {
     let mensaje = {
         messageText: $("#MensajeMessageText").val(),
-        doctor: {id:+$("MensajeDoctor").val()},
-        client: {idClient:+$("MensajeCliente").val()},
+        doctor: {id:+$("#MensajeDoctor").val()},
+        client: {idClient:+$("#MensajeCliente").val()},
     };
-
+    console.log(mensaje);  
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",
@@ -606,13 +627,15 @@ function guardarInformacionMensaje() {
             $("#resultado").empty();
             $("#MensajeId").val("");
             $("#MensajeMessageText").val("");
+            $("#MensajeDoctor").val("");
+            $("#MensajeCliente").val("");
             //extraerInformacionMensajes();
             //window.location.reload();
         },
 
         error: function (jqXHR, textStatus, errorThrown) {
             //window.location.reload();
-            alert("Error saving. Try again.");
+            //alert("Error saving. Try again.");
         },
     });
 }
@@ -703,16 +726,17 @@ function extraerInformacionReservas() {
 
 //Presenta lista o tabla de reservas
 function pintarRespuestaReservas(respuestaReservas) {
-    let tablaReservas = "<table> <tr> <th>Id</th> <th>Doctor</th> <th>Client</th> <th>Specialty</th> <th>Star Date</th> <th>End Date</th> <th>Status</th> <th>Score</th> <th>Message</th> </tr>";
+    let tablaReservas = "<table> <tr> <th>Id</th> <th>Doctor</th> <th>Client</th> <th>Specialty</th> <th>Star Date</th> <th>End Date</th> <th>Status</th> <th>Creation Date</th> </tr>";
     for (i = 0; i < respuestaReservas.length; i++) {
         tablaReservas += "<tr>";
         tablaReservas += "<td>" + respuestaReservas[i].idReservation + "</td>";
         tablaReservas += "<td>" + respuestaReservas[i].doctor.name + "</td>";
         tablaReservas += "<td>" + respuestaReservas[i].client.name + "</td>";
         tablaReservas += "<td>" + respuestaReservas[i].doctor.specialty.name + "</td>";
-        tablaReservas += "<td>" + respuestaReservas[i].startDate + "</td>";
-        tablaReservas += "<td>" + respuestaReservas[i].devolutionDate + "</td>";
+        tablaReservas += "<td>" + respuestaReservas[i].startDate.slice(0,10) + "</td>";
+        tablaReservas += "<td>" + respuestaReservas[i].devolutionDate.slice(0,10) + "</td>";
         tablaReservas += "<td>" + respuestaReservas[i].status + "</td>";
+        tablaReservas += "<td>" + respuestaReservas[i].creationDate.slice(0,10) + "</td>";
         tablaReservas += "<td> <button onclick = 'borrarInformacionReserva(" + respuestaReservas[i].idReservation + ")'>Delete</button>";
         tablaReservas += "<td> <button onclick = 'actualizarInformacionReserva(" + respuestaReservas[i].idReservation + ")'>Update</button>";
         tablaReservas += "<td> <button onclick = 'cargarInformacionReserva(" + respuestaReservas[i].idReservation + ")'>Edit</button>";
@@ -727,9 +751,8 @@ function guardarInformacionReserva() {
     let reserva = {
         startDate: $("#ReservaStartDate").val(),
         devolutionDate: $("#ReservaDevolutionDate").val(),
-        status: $("#ReservaStatus").val(),
-        client: {idClient:+$("ReservaCliente").val()},
-        doctor: {id:+$("ReservaDoctor").val()},
+        client: {idClient:+$("#ReservaCliente").val()},
+        doctor: {id:+$("#ReservaDoctor").val()},
     };
 
     $.ajax({
