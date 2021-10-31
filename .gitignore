@@ -4,6 +4,7 @@ ssh*
 .jar
 .key
 ciclo3.doctor-0.0.1-SNAPSHOT.jar
+ssh-key-2021-10-17.key
 
 .apt_generated
 .classpath
