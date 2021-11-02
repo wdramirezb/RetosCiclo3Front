@@ -38,7 +38,7 @@ $("#resultado").append(tablaDoctores);
 
 //Extrae especialidades para desplegable al cargar página
 function autoInicioEspecialidades() {
-    console.log("cargando...")
+    console.log("cargando lista especialidades para doctores")
     $.ajax({
         url: "http://129.151.122.81:8080/api/Specialty/all",
         type: "GET",
@@ -85,6 +85,9 @@ function pintarRespuestaEspecialidades(respuestaEspecialidades) {
 }
 
 //Guarda una nueva especialidad en la base de datos
+
+
+    
 function guardarInformacionEspecialidad() {
     let especialidad = {
         name: $("#EspecialidadesName").val(),
@@ -104,8 +107,8 @@ function guardarInformacionEspecialidad() {
             $("#EspecialidadesName").val("");
             $("#EspecialidadesDescription").val("");
             alert("New specialty added");
-            extraerInformacionEspecialidades();
             window.location.reload()
+            extraerInformacionEspecialidades();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             window.location.reload();
@@ -182,7 +185,7 @@ function borrarInformacionEspecialidad(idEspecialidad) {
 
 //Extrae todos los doctores de la base de datos para desplegable de mensajes
 function autoInicioDoctoresMensajes() {
-    console.log("cargando...")
+    console.log("cargando lista de doctores para mensajes")
     $.ajax({
         url: "http://129.151.122.81:8080/api/Doctor/all",
         type: "GET",
@@ -201,7 +204,7 @@ function autoInicioDoctoresMensajes() {
 
 //Extrae todos los doctores de la base de datos para desplegable de reservas
 function autoInicioDoctoresReservas() {
-    console.log("cargando...")
+    console.log("cargando lista de doctores para reservas")
     $.ajax({
         url: "http://129.151.122.81:8080/api/Doctor/all",
         type: "GET",
@@ -223,27 +226,27 @@ function extraerInformacionDoctores() {
         url: "http://129.151.122.81:8080/api/Doctor/all",
         type: "GET",
         datatype: "JSON",
-        success: function (respuestaDoctor) {
-            console.log(respuestaDoctor);
-            pintarRespuestaDoctores(respuestaDoctor);
+        success: function (respuestaDoctores) {
+            console.log(respuestaDoctores);
+            pintarRespuestaDoctores(respuestaDoctores);
         },
     });
 }
 
 //Presenta lista o tabla de doctores
-function pintarRespuestaDoctores(respuestaDoctor) {
+function pintarRespuestaDoctores(respuestaDoctores) {
     let tablaDoctores = "<table> <tr> <th>Id</th> <th>Name</th> <th>Department</th> <th>Year</th> <th>Description</th> <th>Specialty</th> </tr>";
-    for (i = 0; i < respuestaDoctor.length; i++) {
+    for (i = 0; i < respuestaDoctores.length; i++) {
         tablaDoctores += "<tr>";
-        tablaDoctores += "<td>" + respuestaDoctor[i].id + "</td>";
-        tablaDoctores += "<td>" + respuestaDoctor[i].name + "</td>";
-        tablaDoctores += "<td>" + respuestaDoctor[i].department + "</td>";
-        tablaDoctores += "<td>" + respuestaDoctor[i].year + "</td>";
-        tablaDoctores += "<td>" + respuestaDoctor[i].description + "</td>";
-        tablaDoctores += "<td>" + respuestaDoctor[i].specialty.name + "</td>";
-        tablaDoctores += "<td> <button onclick = 'borrarInformacionDoctor(" + respuestaDoctor[i].id + ")'>Delete</button>";
-        tablaDoctores += "<td> <button onclick = 'actualizarInformacionDoctor(" + respuestaDoctor[i].id + ")'>Update</button>";
-        tablaDoctores += "<td> <button onclick = 'cargarInformacionDoctor(" + respuestaDoctor[i].id + ")'>Edit</button>";
+        tablaDoctores += "<td>" + respuestaDoctores[i].id + "</td>";
+        tablaDoctores += "<td>" + respuestaDoctores[i].name + "</td>";
+        tablaDoctores += "<td>" + respuestaDoctores[i].department + "</td>";
+        tablaDoctores += "<td>" + respuestaDoctores[i].year + "</td>";
+        tablaDoctores += "<td>" + respuestaDoctores[i].description + "</td>";
+        tablaDoctores += "<td>" + respuestaDoctores[i].specialty.name + "</td>";
+        tablaDoctores += "<td> <button onclick = 'borrarInformacionDoctor(" + respuestaDoctores[i].id + ")'>Delete</button>";
+        tablaDoctores += "<td> <button onclick = 'actualizarInformacionDoctor(" + respuestaDoctores[i].id + ")'>Update</button>";
+        tablaDoctores += "<td> <button onclick = 'cargarInformacionDoctor(" + respuestaDoctores[i].id + ")'>Edit</button>";
         tablaDoctores += "</tr>";
     }
     tablaDoctores += "</table>";
@@ -252,19 +255,19 @@ function pintarRespuestaDoctores(respuestaDoctor) {
 
 //Guarda un nuevo doctor en la base de datos
 function guardarInformacionDoctor() {
-let doctor = {
-    name: $("#DoctorName").val(),
-    department: $("#DoctorDepartment").val(),
-    year: $("#DoctorYear").val(),
-    description: $("#DoctorDescription").val(),
-    specialty: {id:+$("#DoctorSpecialty").val()},
-};
-$.ajax({
-    type: "POST",
-    contentType: "application/json; charset=utf-8",
-    dataType: "JSON",
-    data: JSON.stringify(doctor),
-    url: "http://129.151.122.81:8080/api/Doctor/save",
+    let doctor = {
+            name: $("#DoctorName").val(),
+            department: $("#DoctorDepartment").val(),
+            year: $("#DoctorYear").val(),
+            description: $("#DoctorDescription").val(),
+            specialty: {id:+$("#DoctorSpecialty").val()},
+        };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        dataType: "JSON",
+        data: JSON.stringify(doctor),
+        url: "http://129.151.122.81:8080/api/Doctor/save",
         success: function (response) {
             console.log(response);
             console.log("New doctor added");
@@ -276,13 +279,13 @@ $.ajax({
             $("#DoctorDescription").val("");
             $("#DoctorSpecialty").val("");
             alert("New doctor added");
-            extraerInformacionDoctores();
             window.location.reload();
+            extraerInformacionDoctores();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             window.location.reload();
             alert("Error saving. Try again.");
-        },
+            },
     });
 }
 
@@ -366,7 +369,7 @@ function borrarInformacionDoctor(idDoctor) {
 
 //Extrae todos los clientes de la base de datos para desplegable de mensajes
 function autoInicioClientesMensajes() {
-    console.log("cargando...")
+    console.log("cargando lista clientes para mensajes")
     $.ajax({
         url: "http://129.151.122.81:8080/api/Client/all",
         type: "GET",
@@ -384,7 +387,7 @@ function autoInicioClientesMensajes() {
 
 //Extrae todos los clientes de la base de datos para desplegable de reservas
 function autoInicioClientesReservas() {
-    console.log("cargando...")
+    console.log("cargando lista clientes para reservas")
     $.ajax({
         url: "http://129.151.122.81:8080/api/Client/all",
         type: "GET",
@@ -432,14 +435,14 @@ function pintarRespuestaClientes(respuestaClientes) {
     $("#resultadoClientes").html(tablaClientes);
 }
 
+////Guardar información de un nuevo cliente
 function guardarInformacionCliente() {
-    let cliente = {
+        let cliente = {
         email: $("#ClienteEmail").val(),
         password: $("#ClientePassword").val(),
         name: $("#ClienteName").val(),
         age: $("#ClienteAge").val(),
     };
-
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",
@@ -943,3 +946,95 @@ function borrarInformacionAdministrador(idAdmin) {
         },
     });
 }
+
+
+//////////////////////BLOQUE REPORTES/////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+//Reporte de estado de reservas
+function traerReporteStatus(){
+    $.ajax({
+        url:"http://129.151.122.81:8080/api/Reservation/report-status",
+        type:"GET",
+        datatype:"JSON",
+        success:function(respuesta){
+            console.log(respuesta);
+            pintarReporteRespuestaStatus(respuesta);
+        }
+    });
+}
+
+function pintarReporteRespuestaStatus(respuesta){
+
+    let myTable="<table>";
+    myTable+="<tr>";
+       myTable+="<th>completadas</th>";
+        myTable+="<td>"+respuesta.completed+"</td>";
+        myTable+="<th>canceladas</th>";
+        myTable+="<td>"+respuesta.cancelled+"</td>";
+        myTable+="</tr>";
+    myTable+="</table>";
+    $("#resultadoReporteStatus").html(myTable);
+}
+
+//Reporte de reservas entre rango de fechas
+function traerReporteDate(){
+    var fechaInicio = document.getElementById("RstarDate").value;
+    var fechaCierre = document.getElementById("RdevolutionDate").value;
+    console.log(fechaInicio);
+    console.log(fechaCierre);
+    $.ajax({
+        url:"http://129.151.122.81:8080/api/Reservation/report-dates/"+fechaInicio+"/"+fechaCierre,
+        type:"GET",
+        datatype:"JSON",
+        success:function(respuesta){
+            console.log(respuesta);
+            pintarRespuestaReporteDate(respuesta);
+        }
+    });
+}
+
+function pintarRespuestaReporteDate(respuesta){
+    let myTable="<table>";
+    myTable+="<tr>";
+    for(i=0;i<respuesta.length;i++){
+    myTable+="<th>total</th>";
+        myTable+="<td>"+respuesta[i].devolutionDate+"</td>";
+        myTable+="<td>"+respuesta[i].startDate+"</td>";
+        myTable+="<td>"+respuesta[i].status+"</td>";
+        myTable+="</tr>";
+    }
+    myTable+="</table>";
+    $("#resultadoReporteDate").html(myTable);
+}
+
+
+//Reporte de top clientes y número de reservas
+function traerReporteClientes(){
+    $.ajax({
+        url:"http://129.151.122.81:8080/api/Reservation/report-clients",
+        type:"GET",
+        datatype:"JSON",
+        success:function(respuesta){
+            console.log(respuesta);
+            pintarRespuestaReporteClientes(respuesta);
+        }
+    });
+}
+
+function pintarRespuestaReporteClientes(respuesta){
+
+    let myTable="<table>";
+    myTable+="<tr>";
+    for(i=0;i<respuesta.length;i++){
+    myTable+="<th>total</th>";
+        myTable+="<td>"+respuesta[i].total+"</td>";
+        myTable+="<td>"+respuesta[i].client.name+"</td>";
+        myTable+="<td>"+respuesta[i].client.email+"</td>";
+        myTable+="<td>"+respuesta[i].client.age+"</td>";
+        myTable+="</tr>";
+    }
+    myTable+="</table>";
+    $("#resultadoReporteClientes").html(myTable);
+}
+
